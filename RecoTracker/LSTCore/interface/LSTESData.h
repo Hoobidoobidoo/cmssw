@@ -20,7 +20,7 @@ namespace lst {
     unsigned int nPixels;
     unsigned int nEndCapMap;
     std::shared_ptr<const ModulesBuffer<TDev>> modulesBuffers;
-    std::shared_ptr<const EndcapGeometryBuffer<TDev>> endcapGeometryBuffers;
+    EndcapGeometryBuffer<TDev> endcapGeometryBuffers;
     std::shared_ptr<const PixelMap> pixelMapping;
 
     LSTESData(uint16_t const& nModulesIn,
@@ -28,7 +28,7 @@ namespace lst {
               unsigned int const& nPixelsIn,
               unsigned int const& nEndCapMapIn,
               std::shared_ptr<const ModulesBuffer<TDev>> const& modulesBuffersIn,
-              std::shared_ptr<const EndcapGeometryBuffer<TDev>> const& endcapGeometryBuffersIn,
+              EndcapGeometryBuffer<TDev> const& endcapGeometryBuffersIn,
               std::shared_ptr<const PixelMap> const& pixelMappingIn)
         : nModules(nModulesIn),
           nLowerModules(nLowerModulesIn),
@@ -53,15 +53,15 @@ namespace cms::alpakatools {
           alpaka::getDev(queue), srcData.nModules, srcData.nPixels);
       deviceModulesBuffers->copyFromSrc(queue, *srcData.modulesBuffers);
       auto deviceEndcapGeometryBuffers =
-          std::make_shared<lst::EndcapGeometryBuffer<alpaka::Dev<TQueue>>>(alpaka::getDev(queue), srcData.nEndCapMap);
-      deviceEndcapGeometryBuffers->copyFromSrc(queue, *srcData.endcapGeometryBuffers);
+          lst::EndcapGeometryBuffer<alpaka::Dev<TQueue>>(alpaka::getDev(queue), srcData.nEndCapMap);
+      deviceEndcapGeometryBuffers.copyFromSrc(queue, srcData.endcapGeometryBuffers);
 
       return lst::LSTESData<alpaka::Dev<TQueue>>(srcData.nModules,
                                                  srcData.nLowerModules,
                                                  srcData.nPixels,
                                                  srcData.nEndCapMap,
                                                  deviceModulesBuffers,
-                                                 deviceEndcapGeometryBuffers,
+                                                 std::move(deviceEndcapGeometryBuffers),
                                                  srcData.pixelMapping);
     }
   };

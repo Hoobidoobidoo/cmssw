@@ -29,7 +29,7 @@ namespace lst {
                            unsigned int& nPixels,
                            PixelMap& pixelMapping,
                            TQueue queue,
-                           const MapPLStoLayer& pLStoLayer,
+                           MapPLStoLayer const& pLStoLayer,
                            ModuleMetaData& mmd) {
     pixelMapping.pixelModuleIndex = mmd.detIdToIndex[1];
 
@@ -109,7 +109,7 @@ namespace lst {
                                                unsigned int nMod,
                                                TQueue queue,
                                                ModuleMetaData& mmd,
-                                               const ModuleConnectionMap* moduleConnectionMap) {
+                                               ModuleConnectionMap const& moduleConnectionMap) {
     alpaka_common::DevHost const& devHost = cms::alpakatools::host();
     auto moduleMap_buf = allocBufWrapper<uint16_t>(devHost, nMod * max_connected_modules);
     uint16_t* moduleMap = alpaka::getPtrNative(moduleMap_buf);
@@ -120,7 +120,7 @@ namespace lst {
     for (auto it = mmd.detIdToIndex.begin(); it != mmd.detIdToIndex.end(); ++it) {
       unsigned int detId = it->first;
       uint16_t index = it->second;
-      auto& connectedModules = moduleConnectionMap->getConnectedModuleDetIds(detId);
+      auto& connectedModules = moduleConnectionMap.getConnectedModuleDetIds(detId);
       nConnectedModules[index] = connectedModules.size();
       for (uint16_t i = 0; i < nConnectedModules[index]; i++) {
         moduleMap[index * max_connected_modules + i] = mmd.detIdToIndex[connectedModules[i]];
@@ -218,16 +218,16 @@ namespace lst {
     nModules = counter;
   };
 
-  inline void loadModulesFromFile(const MapPLStoLayer* pLStoLayer,
+  inline void loadModulesFromFile(MapPLStoLayer& pLStoLayer,
                                   const char* moduleMetaDataFilePath,
                                   uint16_t& nModules,
                                   uint16_t& nLowerModules,
                                   unsigned int& nPixels,
                                   std::shared_ptr<ModulesBuffer<alpaka_common::DevHost>>& modulesBuf,
-                                  PixelMap* pixelMapping,
-                                  const EndcapGeometry* endcapGeometry,
-                                  const TiltedGeometry* tiltedGeometry,
-                                  const ModuleConnectionMap* moduleConnectionMap) {
+                                  PixelMap& pixelMapping,
+                                  const EndcapGeometry& endcapGeometry,
+                                  const TiltedGeometry& tiltedGeometry,
+                                  const ModuleConnectionMap& moduleConnectionMap) {
     ModuleMetaData mmd;
 
     loadCentroidsFromFile(moduleMetaDataFilePath, mmd, nModules);
@@ -347,8 +347,8 @@ namespace lst {
           host_isAnchor[index] = false;
         }
 
-        host_dxdys[index] = (subdet == Endcap) ? endcapGeometry->getdxdy_slope(detId) : tiltedGeometry->getDxDy(detId);
-        host_drdzs[index] = (subdet == Barrel) ? tiltedGeometry->getDrDz(detId) : 0;
+        host_dxdys[index] = (subdet == Endcap) ? endcapGeometry.getdxdy_slope(detId) : tiltedGeometry.getDxDy(detId);
+        host_drdzs[index] = (subdet == Barrel) ? tiltedGeometry.getDrDz(detId) : 0;
       }
 
       host_lstLayers[index] =
@@ -376,7 +376,7 @@ namespace lst {
     alpaka::QueueCpuBlocking queue(cms::alpakatools::host());
 
     // modulesBuf is initialized in fillPixelMap since both nModules and nPix will be known
-    fillPixelMap(modulesBuf, nModules, nPixels, *pixelMapping, queue, *pLStoLayer, mmd);
+    fillPixelMap(modulesBuf, nModules, nPixels, pixelMapping, queue, pLStoLayer, mmd);
 
     auto src_view_nModules = alpaka::createView(devHost, &nModules, (alpaka_common::Idx)1u);
     alpaka::memcpy(queue, modulesBuf->nModules_buf, src_view_nModules);

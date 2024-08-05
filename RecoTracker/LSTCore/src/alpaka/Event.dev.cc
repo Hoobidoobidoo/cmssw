@@ -195,8 +195,8 @@ void lst::Event<Acc3D>::addHitToEvent(std::vector<float> const& x,
                                       TwoS,
                                       nModules_,
                                       nEndCapMap_,
-                                      alpaka::getPtrNative(endcapGeometryBuffers_->geoMapDetId_buf),
-                                      alpaka::getPtrNative(endcapGeometryBuffers_->geoMapPhi_buf),
+                                      alpaka::getPtrNative(endcapGeometryBuffers_.geoMapDetId_buf),
+                                      alpaka::getPtrNative(endcapGeometryBuffers_.geoMapPhi_buf),
                                       *modulesBuffers_->data(),
                                       *hitsInGPU,
                                       nHits));
@@ -247,7 +247,7 @@ void lst::Event<Acc3D>::addPixelSegmentToEvent(std::vector<unsigned int> const& 
   }
 
   unsigned int mdSize = 2 * size;
-  uint16_t pixelModuleIndex = pixelMapping_->pixelModuleIndex;
+  uint16_t pixelModuleIndex = pixelMapping_.pixelModuleIndex;
 
   if (mdsInGPU == nullptr) {
     // Create a view for the element nLowerModules_ inside rangesBuffers->miniDoubletModuleOccupancy
@@ -820,9 +820,9 @@ void lst::Event<Acc3D>::createPixelTriplets() {
   alpaka::wait(queue);
 
   int pixelIndexOffsetPos =
-      pixelMapping_->connectedPixelsIndex[size_superbins - 1] + pixelMapping_->connectedPixelsSizes[size_superbins - 1];
-  int pixelIndexOffsetNeg = pixelMapping_->connectedPixelsIndexPos[size_superbins - 1] +
-                            pixelMapping_->connectedPixelsSizesPos[size_superbins - 1] + pixelIndexOffsetPos;
+      pixelMapping_.connectedPixelsIndex[size_superbins - 1] + pixelMapping_.connectedPixelsSizes[size_superbins - 1];
+  int pixelIndexOffsetNeg = pixelMapping_.connectedPixelsIndexPos[size_superbins - 1] +
+                            pixelMapping_.connectedPixelsSizesPos[size_superbins - 1] + pixelIndexOffsetPos;
 
   // TODO: check if a map/reduction to just eligible pLSs would speed up the kernel
   // the current selection still leaves a significant fraction of unmatchable pLSs
@@ -838,19 +838,19 @@ void lst::Event<Acc3D>::createPixelTriplets() {
     // Used pixel type to select correct size-index arrays
     if (pixelType == 0) {
       connectedPixelSize_host[i] =
-          pixelMapping_->connectedPixelsSizes[superbin];  // number of connected modules to this pixel
-      auto connectedIdxBase = pixelMapping_->connectedPixelsIndex[superbin];
+          pixelMapping_.connectedPixelsSizes[superbin];  // number of connected modules to this pixel
+      auto connectedIdxBase = pixelMapping_.connectedPixelsIndex[superbin];
       connectedPixelIndex_host[i] =
           connectedIdxBase;  // index to get start of connected modules for this superbin in map
     } else if (pixelType == 1) {
       connectedPixelSize_host[i] =
-          pixelMapping_->connectedPixelsSizesPos[superbin];  // number of pixel connected modules
-      auto connectedIdxBase = pixelMapping_->connectedPixelsIndexPos[superbin] + pixelIndexOffsetPos;
+          pixelMapping_.connectedPixelsSizesPos[superbin];  // number of pixel connected modules
+      auto connectedIdxBase = pixelMapping_.connectedPixelsIndexPos[superbin] + pixelIndexOffsetPos;
       connectedPixelIndex_host[i] = connectedIdxBase;  // index to get start of connected pixel modules
     } else if (pixelType == 2) {
       connectedPixelSize_host[i] =
-          pixelMapping_->connectedPixelsSizesNeg[superbin];  // number of pixel connected modules
-      auto connectedIdxBase = pixelMapping_->connectedPixelsIndexNeg[superbin] + pixelIndexOffsetNeg;
+          pixelMapping_.connectedPixelsSizesNeg[superbin];  // number of pixel connected modules
+      auto connectedIdxBase = pixelMapping_.connectedPixelsIndexNeg[superbin] + pixelIndexOffsetNeg;
       connectedPixelIndex_host[i] = connectedIdxBase;  // index to get start of connected pixel modules
     }
   }
@@ -1052,9 +1052,9 @@ void lst::Event<Acc3D>::createPixelQuintuplets() {
   alpaka::wait(queue);
 
   int pixelIndexOffsetPos =
-      pixelMapping_->connectedPixelsIndex[size_superbins - 1] + pixelMapping_->connectedPixelsSizes[size_superbins - 1];
-  int pixelIndexOffsetNeg = pixelMapping_->connectedPixelsIndexPos[size_superbins - 1] +
-                            pixelMapping_->connectedPixelsSizesPos[size_superbins - 1] + pixelIndexOffsetPos;
+      pixelMapping_.connectedPixelsIndex[size_superbins - 1] + pixelMapping_.connectedPixelsSizes[size_superbins - 1];
+  int pixelIndexOffsetNeg = pixelMapping_.connectedPixelsIndexPos[size_superbins - 1] +
+                            pixelMapping_.connectedPixelsSizesPos[size_superbins - 1] + pixelIndexOffsetPos;
 
   // Loop over # pLS
   for (unsigned int i = 0; i < nInnerSegments; i++) {
@@ -1068,18 +1068,18 @@ void lst::Event<Acc3D>::createPixelQuintuplets() {
     // Used pixel type to select correct size-index arrays
     if (pixelType == 0) {
       connectedPixelSize_host[i] =
-          pixelMapping_->connectedPixelsSizes[superbin];  //number of connected modules to this pixel
-      unsigned int connectedIdxBase = pixelMapping_->connectedPixelsIndex[superbin];
+          pixelMapping_.connectedPixelsSizes[superbin];  //number of connected modules to this pixel
+      unsigned int connectedIdxBase = pixelMapping_.connectedPixelsIndex[superbin];
       connectedPixelIndex_host[i] = connectedIdxBase;
     } else if (pixelType == 1) {
       connectedPixelSize_host[i] =
-          pixelMapping_->connectedPixelsSizesPos[superbin];  //number of pixel connected modules
-      unsigned int connectedIdxBase = pixelMapping_->connectedPixelsIndexPos[superbin] + pixelIndexOffsetPos;
+          pixelMapping_.connectedPixelsSizesPos[superbin];  //number of pixel connected modules
+      unsigned int connectedIdxBase = pixelMapping_.connectedPixelsIndexPos[superbin] + pixelIndexOffsetPos;
       connectedPixelIndex_host[i] = connectedIdxBase;
     } else if (pixelType == 2) {
       connectedPixelSize_host[i] =
-          pixelMapping_->connectedPixelsSizesNeg[superbin];  //number of pixel connected modules
-      unsigned int connectedIdxBase = pixelMapping_->connectedPixelsIndexNeg[superbin] + pixelIndexOffsetNeg;
+          pixelMapping_.connectedPixelsSizesNeg[superbin];  //number of pixel connected modules
+      unsigned int connectedIdxBase = pixelMapping_.connectedPixelsIndexNeg[superbin] + pixelIndexOffsetNeg;
       connectedPixelIndex_host[i] = connectedIdxBase;
     }
   }
