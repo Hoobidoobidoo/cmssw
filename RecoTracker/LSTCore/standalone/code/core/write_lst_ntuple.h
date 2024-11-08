@@ -42,6 +42,8 @@ std::tuple<float, float, float, std::vector<unsigned int>, std::vector<unsigned 
                                                                                               unsigned int);
 std::tuple<float, float, float, std::vector<unsigned int>, std::vector<unsigned int>> parsepLS(LSTEvent* event,
                                                                                                unsigned int);
+std::tuple<float, float, float, std::vector<unsigned int>, std::vector<unsigned int>> parseT4(LSTEvent* event,
+                                                                                               unsigned int);
 
 // Print multiplicities
 void printMiniDoubletMultiplicities(LSTEvent* event);
