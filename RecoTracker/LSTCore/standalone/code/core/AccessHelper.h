@@ -7,7 +7,7 @@
 
 using LSTEvent = lst::Event<ALPAKA_ACCELERATOR_NAMESPACE::Acc3D>;
 
-enum { kpT5 = 7, kpT3 = 5, kT5 = 4, kpLS = 8 };
+enum { kpT5 = 7, kpT3 = 5, kT5 = 4, kpLS = 8, kT4 = 9 };
 
 // ----* Hit *----
 std::tuple<std::vector<unsigned int>, std::vector<unsigned int>> convertHitsToHitIdxsAndHitTypes(

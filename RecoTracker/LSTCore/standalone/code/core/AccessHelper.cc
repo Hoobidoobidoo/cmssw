@@ -428,6 +428,9 @@ std::vector<unsigned int> getLSsFromTC(lst::Event<Acc3D>* event, unsigned int TC
     case kpLS:
       return std::vector<unsigned int>();
       break;
+    case kT4:
+      return getLSsFromT4(event, objidx);
+      break;
   }
 }
 
@@ -450,6 +453,9 @@ std::tuple<std::vector<unsigned int>, std::vector<unsigned int>> getHitIdxsAndHi
       break;
     case kpLS:
       return getHitIdxsAndHitTypesFrompLS(event, objidx);
+      break;
+    case kT4:
+      return getHitIdxsAndHitTypesFromT4(event, objidx);
       break;
   }
 }
