@@ -104,6 +104,23 @@ namespace lst {
         {0.268, 0.3172, 0.3907, 0.4653, 0.4364, 0.4696, 0.6018, 0.6487, 0.7401, 0.7146},
         {0.1654, 0.2385, 0.2935, 0.3534, 0.2455, 0.1748, 0.1565, 0.1811, 0.3435, 0.1784}};
   }  // namespace t5dnn
+  namespace t4dnn {
+    ALPAKA_STATIC_ACC_MEM_GLOBAL constexpr float kZ_max = 267.2349854f;
+    ALPAKA_STATIC_ACC_MEM_GLOBAL constexpr float kR_max = 110.1099396f;
+    ALPAKA_STATIC_ACC_MEM_GLOBAL constexpr float kEta_norm = 2.5f;
+    // pt, eta binned
+    constexpr unsigned int kPtBins = 2;
+    constexpr unsigned int kEtaBins = 10;
+    ALPAKA_STATIC_ACC_MEM_GLOBAL constexpr float kWp[kPtBins][kEtaBins] = {
+        // {0.0867, 0.0779, 0.087, 0.1133, 0.0967, 0.1732, 0.2212, 0.2295, 0.3681, 0.776},
+        // {0.1097, 0.0933, 0.083, 0.1244, 0.1222, 0.1638, 0.242, 0.3114, 0.3222, 0.7345}}; //trained on muonGun
+        // {0.0004, 0.001, 0.0014, 0.0033, 0.0039, 0.0073, 0.0185, 0.0181, 0.049, 0.1897},
+        // {0.0005, 0.0009, 0.0011, 0.0036, 0.0028, 0.0079, 0.0173, 0.0233, 0.0651, 0.1902}}; //trained on PU200 
+        // {0.0682, 0.1425, 0.1594, 0.3164, 0.1854, 0.1718, 0.3254, 0.4509, 0.9112, 0.9705},
+        // {0.1085, 0.1874, 0.1584, 0.1692, 0.1531, 0.1447, 0.3501, 0.6382, 0.9281, 0.9642}};  //trained on cube5
+        {0.0003, 0.0006, 0.0003, 0.0007, 0.0008, 0.0008, 0.0006, 0.0024, 0.002, 0.0015},
+        {0.0006, 0.0003, 0.0005, 0.0003, 0.0008, 0.0008, 0.0012, 0.0007, 0.0036, 0.0015}}; //trained on PU200, abs(eta)<1
+  }  // namespace t4dnn
 
 }  //namespace lst
 #endif
