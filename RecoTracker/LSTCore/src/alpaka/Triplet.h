@@ -12,6 +12,8 @@
 #include "Hit.h"
 #include "ObjectRanges.h"
 
+#include "NeuralNetwork.h"
+
 namespace lst {
   struct Triplets {
     unsigned int* segmentIndices;
@@ -882,6 +884,11 @@ namespace lst {
                                    betaIn,
                                    betaInCut,
                                    ptCut)))
+      return false;
+
+    bool inference =
+      lst::t3dnn::runInference(acc, mdsInGPU, firstMDIndex, secondMDIndex, thirdMDIndex, circleRadius, betaIn);
+    if (!inference)  // T3-building cut
       return false;
 
     return true;
