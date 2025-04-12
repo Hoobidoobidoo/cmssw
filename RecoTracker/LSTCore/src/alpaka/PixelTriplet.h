@@ -737,7 +737,7 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
 
     uint16_t lowerModuleIndices[Params_T3::kLayers] = {lowerModuleIndex, middleModuleIndex, upperModuleIndex};
 
-    if (runChiSquaredCuts) {
+    if (runDNN || runChiSquaredCuts) {
       float rts[Params_T3::kLayers] = {
           mds.anchorRt()[firstMDIndex], mds.anchorRt()[secondMDIndex], mds.anchorRt()[thirdMDIndex]};
       float zs[Params_T3::kLayers] = {
@@ -763,20 +763,20 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
                                             pixelSegmentPy,
                                             pixelSegmentPz,
                                             pixelSegmentCharge);
-      if (pixelSegmentPt < 5.0f) {
+      if (runChiSquaredCuts && pixelSegmentPt < 5.0f) {
         if (!passPT3RZChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rzChiSquared))
           return false;
       }
 
       rPhiChiSquared =
           computePT3RPhiChiSquared(acc, modules, lowerModuleIndices, pixelG, pixelF, pixelRadiusPCA, xs, ys);
-      if (pixelSegmentPt < 5.0f) {
+      if (runChiSquaredCuts && pixelSegmentPt < 5.0f) {
         if (!passPT3RPhiChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquared))
           return false;
       }
 
       rPhiChiSquaredInwards = computePT3RPhiChiSquaredInwards(g, f, tripletRadius, xPix, yPix);
-      if (pixelSegmentPt < 5.0f) {
+      if (runChiSquaredCuts && pixelSegmentPt < 5.0f) {
         if (!passPT3RPhiChiSquaredInwardsCuts(
                 modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquaredInwards))
           return false;

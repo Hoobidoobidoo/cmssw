@@ -560,21 +560,22 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
     //get the appropriate centers
     pixelRadius = pixelSegments.circleRadius()[pixelSegmentArrayIndex];
 
+    rzChiSquared = computePT5RZChiSquared(acc,
+                                          modules,
+                                          lowerModuleIndices,
+                                          rtPix,
+                                          xPix,
+                                          yPix,
+                                          zPix,
+                                          rts,
+                                          zs,
+                                          pixelSegmentPt,
+                                          pixelSegmentPx,
+                                          pixelSegmentPy,
+                                          pixelSegmentPz,
+                                          pixelSegmentCharge);
+
     if (pixelRadius < 5.0f * kR1GeVf) {  //only apply r-z chi2 cuts for <5GeV tracks
-      rzChiSquared = computePT5RZChiSquared(acc,
-                                            modules,
-                                            lowerModuleIndices,
-                                            rtPix,
-                                            xPix,
-                                            yPix,
-                                            zPix,
-                                            rts,
-                                            zs,
-                                            pixelSegmentPt,
-                                            pixelSegmentPx,
-                                            pixelSegmentPy,
-                                            pixelSegmentPz,
-                                            pixelSegmentCharge);
       if (not passPT5RZChiSquaredCuts(modules,
                                       lowerModuleIndex1,
                                       lowerModuleIndex2,
