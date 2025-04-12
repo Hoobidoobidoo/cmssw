@@ -84,7 +84,8 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
 
     namespace pt3dnn {
       HOST_DEVICE_CONSTANT float kWp[kEtaBins] = {
-          0.2297, 0.2132, 0.2563, 0.3706, 0.3706, 0.2197, 0.0775, 0.0888, 0.2907, 0.133};
+          0.189, 0.1805, 0.2267, 0.3104, 0.4719, 0.3159, 0.1372, 0.1571, 0.3198, 0.186};
+      HOST_DEVICE_CONSTANT float kWpHigh = 0.2557;
     }  // namespace pt3dnn
 
   }  // namespace dnn

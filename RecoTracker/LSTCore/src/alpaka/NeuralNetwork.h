@@ -146,13 +146,14 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
                                                      const float pt3_pix_rad,
                                                      const float pt3_pixRadError,
                                                      const float pt3_rzChiSquared,
-                                                     const float pt3_eta) {
+                                                     const float pt3_eta,
+                                                     const float pt3_pT) {
       constexpr unsigned int kinputFeatures = 6;
       float x[kinputFeatures] = {alpaka::math::log10(acc, pt3_rPhiChiSquared),
                                  alpaka::math::log10(acc, pt3_trip_rad),
                                  alpaka::math::log10(acc, pt3_pix_rad),
                                  alpaka::math::log10(acc, pt3_pixRadError),
-                                 alpaka::math::log10(acc, (pt3_rzChiSquared < 0.f) ? 1e-3f : pt3_rzChiSquared),
+                                 alpaka::math::log10(acc, pt3_rzChiSquared),
                                  alpaka::math::abs(acc, pt3_eta) / dnn::kEta_norm};
 
       constexpr unsigned int khiddenFeatures = 32;
@@ -174,6 +175,9 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
       uint8_t bin_index = (alpaka::math::abs(acc, pt3_eta) > dnn::kEta_norm)
                               ? (dnn::kEtaBins - 1)
                               : static_cast<unsigned int>(alpaka::math::abs(acc, pt3_eta) / 0.25f);
+
+      if (pt3_pT > 5.0)
+        return output > dnn::pt3dnn::kWpHigh;
 
       return output > dnn::pt3dnn::kWp[bin_index];
     }

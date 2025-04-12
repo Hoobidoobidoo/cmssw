@@ -737,7 +737,7 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
 
     uint16_t lowerModuleIndices[Params_T3::kLayers] = {lowerModuleIndex, middleModuleIndex, upperModuleIndex};
 
-    if (runChiSquaredCuts and pixelSegmentPt < 5.0f) {
+    if (runChiSquaredCuts) {
       float rts[Params_T3::kLayers] = {
           mds.anchorRt()[firstMDIndex], mds.anchorRt()[secondMDIndex], mds.anchorRt()[thirdMDIndex]};
       float zs[Params_T3::kLayers] = {
@@ -763,39 +763,37 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
                                             pixelSegmentPy,
                                             pixelSegmentPz,
                                             pixelSegmentCharge);
-      if (not passPT3RZChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rzChiSquared))
-        return false;
-    } else {
-      rzChiSquared = -1;
+      if (pixelSegmentPt < 5.0f) {
+        if (!passPT3RZChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rzChiSquared))
+          return false;
+      }
+
+      rPhiChiSquared =
+          computePT3RPhiChiSquared(acc, modules, lowerModuleIndices, pixelG, pixelF, pixelRadiusPCA, xs, ys);
+      if (pixelSegmentPt < 5.0f) {
+        if (!passPT3RPhiChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquared))
+          return false;
+      }
+
+      rPhiChiSquaredInwards = computePT3RPhiChiSquaredInwards(g, f, tripletRadius, xPix, yPix);
+      if (pixelSegmentPt < 5.0f) {
+        if (!passPT3RPhiChiSquaredInwardsCuts(
+                modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquaredInwards))
+          return false;
+      }
     }
 
-    rPhiChiSquared = computePT3RPhiChiSquared(acc, modules, lowerModuleIndices, pixelG, pixelF, pixelRadiusPCA, xs, ys);
-
-    if (runChiSquaredCuts and pixelSegmentPt < 5.0f) {
-      if (not passPT3RPhiChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquared))
-        return false;
-    }
-
-    float xPix[Params_pLS::kLayers] = {mds.anchorX()[pixelInnerMDIndex], mds.anchorX()[pixelOuterMDIndex]};
-    float yPix[Params_pLS::kLayers] = {mds.anchorY()[pixelInnerMDIndex], mds.anchorY()[pixelOuterMDIndex]};
-    rPhiChiSquaredInwards = computePT3RPhiChiSquaredInwards(g, f, tripletRadius, xPix, yPix);
-
-    if (runChiSquaredCuts and pixelSegmentPt < 5.0f) {
-      if (not passPT3RPhiChiSquaredInwardsCuts(
-              modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquaredInwards))
-        return false;
-    }
     centerX = 0;
     centerY = 0;
 
     if (runDNN and !lst::pt3dnn::runInference(acc,
-                                              rPhiChiSquared,                                // pT3 rPhiChiSquared
-                                              tripletRadius,                                 // pT3 tripletRadius
-                                              pixelRadius,                                   // pT3 pixelRadius
-                                              pixelRadiusError,                              // pT3 pixelRadiusError
-                                              rzChiSquared,                                  // pT3 rzChiSquared
-                                              pixelSegments.eta()[pixelSegmentArrayIndex]))  // pT3 eta
-    {
+                                              rPhiChiSquared,
+                                              tripletRadius,
+                                              pixelRadius,
+                                              pixelRadiusError,
+                                              rzChiSquared,
+                                              pixelSegments.eta()[pixelSegmentArrayIndex],
+                                              pixelSegmentPt)) {
       return false;
     }
 
