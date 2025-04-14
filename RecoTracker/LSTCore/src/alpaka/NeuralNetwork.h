@@ -141,20 +141,20 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
 
     template <typename TAcc>
     ALPAKA_FN_ACC ALPAKA_FN_INLINE bool runInference(TAcc const& acc,
-                                                     const float pt3_rPhiChiSquared,
-                                                     const float pt3_trip_rad,
-                                                     const float pt3_pix_rad,
-                                                     const float pt3_pixRadError,
-                                                     const float pt3_rzChiSquared,
-                                                     const float pt3_eta,
-                                                     const float pt3_pT) {
+                                                     const float rPhiChiSquared,
+                                                     const float tripletRadius,
+                                                     const float pixelRadius,
+                                                     const float pixRadiusError,
+                                                     const float rzChiSquared,
+                                                     const float pixelEta,
+                                                     const float pixelPt) {
       constexpr unsigned int kinputFeatures = 6;
-      float x[kinputFeatures] = {alpaka::math::log10(acc, pt3_rPhiChiSquared),
-                                 alpaka::math::log10(acc, pt3_trip_rad),
-                                 alpaka::math::log10(acc, pt3_pix_rad),
-                                 alpaka::math::log10(acc, pt3_pixRadError),
-                                 alpaka::math::log10(acc, pt3_rzChiSquared),
-                                 alpaka::math::abs(acc, pt3_eta) / dnn::kEta_norm};
+      float x[kinputFeatures] = {alpaka::math::log10(acc, rPhiChiSquared),
+                                 alpaka::math::log10(acc, tripletRadius),
+                                 alpaka::math::log10(acc, pixelRadius),
+                                 alpaka::math::log10(acc, pixRadiusError),
+                                 alpaka::math::log10(acc, rzChiSquared),
+                                 alpaka::math::abs(acc, pixelEta) / dnn::kEta_norm};
 
       constexpr unsigned int khiddenFeatures = 32;
       constexpr unsigned int koutputFeatures = 1;
@@ -172,11 +172,11 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
           x2, x3, dnn::pt3dnn::wgtT_output_layer, dnn::pt3dnn::bias_output_layer);
       float output = sigmoid_activation(acc, x3[0]);
 
-      uint8_t bin_index = (alpaka::math::abs(acc, pt3_eta) > dnn::kEta_norm)
+      uint8_t bin_index = (alpaka::math::abs(acc, pixelEta) > dnn::kEta_norm)
                               ? (dnn::kEtaBins - 1)
-                              : static_cast<unsigned int>(alpaka::math::abs(acc, pt3_eta) / 0.25f);
+                              : static_cast<unsigned int>(alpaka::math::abs(acc, pixelEta) / 0.25f);
 
-      if (pt3_pT > 5.0)
+      if (pixelPt > 5.0f)
         return output > dnn::pt3dnn::kWpHigh;
 
       return output > dnn::pt3dnn::kWp[bin_index];
