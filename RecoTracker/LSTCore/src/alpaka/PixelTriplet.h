@@ -763,24 +763,9 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE::lst {
                                             pixelSegmentPy,
                                             pixelSegmentPz,
                                             pixelSegmentCharge);
-      if (runChiSquaredCuts && pixelSegmentPt < 5.0f) {
-        if (!passPT3RZChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rzChiSquared))
-          return false;
-      }
-
       rPhiChiSquared =
           computePT3RPhiChiSquared(acc, modules, lowerModuleIndices, pixelG, pixelF, pixelRadiusPCA, xs, ys);
-      if (runChiSquaredCuts && pixelSegmentPt < 5.0f) {
-        if (!passPT3RPhiChiSquaredCuts(modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquared))
-          return false;
-      }
-
       rPhiChiSquaredInwards = computePT3RPhiChiSquaredInwards(g, f, tripletRadius, xPix, yPix);
-      if (runChiSquaredCuts && pixelSegmentPt < 5.0f) {
-        if (!passPT3RPhiChiSquaredInwardsCuts(
-                modules, lowerModuleIndex, middleModuleIndex, upperModuleIndex, rPhiChiSquaredInwards))
-          return false;
-      }
     }
 
     centerX = 0;
