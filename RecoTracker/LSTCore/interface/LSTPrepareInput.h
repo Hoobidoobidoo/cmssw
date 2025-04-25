@@ -20,6 +20,7 @@ namespace lst {
     return {vx, vy, vz};
   }
 
+  template <typename TQueue>
   inline LSTInputHostCollection prepareInput(std::vector<float> const& see_px,
                                              std::vector<float> const& see_py,
                                              std::vector<float> const& see_pz,
@@ -43,7 +44,8 @@ namespace lst {
 #ifndef LST_STANDALONE
                                              std::vector<TrackingRecHit const*> const& ph2_hits,
 #endif
-                                             float const ptCut) {
+                                             float const ptCut,
+                                             TQueue const& queue) {
     std::vector<float> trkX;
     std::vector<float> trkY;
     std::vector<float> trkZ;
@@ -205,7 +207,7 @@ namespace lst {
     }
 
     std::array<int, 2> const soa_sizes{{nHitsIT + nHitsOT, nPixelSeeds}};
-    LSTInputHostCollection lstInputHC(soa_sizes, cms::alpakatools::host());
+    LSTInputHostCollection lstInputHC(soa_sizes, queue);
 
     auto hits = lstInputHC.view<HitsBaseSoA>();
     std::memcpy(hits.xs(), ph2_x.data(), nHitsOT * sizeof(float));
